@@ -78,19 +78,33 @@ public class Graph {
     
     public static void main(String[] args) throws IOException
     {
-        Graph graph = new Graph("adj.txt");
+        Graph g = new Graph("adj.txt");
         
-        graph.adjMatrix.printMatrix();
+        g.adjMatrix.printMatrix();
         
         System.out.println();
         
-        BitMatrix multMatrix = multiply(graph.adjMatrix, graph.adjMatrix);
+        BitMatrix a = warshall(g.adjMatrix);
         
-        multMatrix.printMatrix();
         System.out.println();
-        BitMatrix third = multiply(multMatrix, graph.adjMatrix);
         
-        third.printMatrix();
+        a.printMatrix();
+        
+        System.out.println();
+        
+        //g.adjMatrix.printAdjList();
+        
+        BitMatrix gg = multiply(g.adjMatrix, g.adjMatrix);
+        
+        gg.printMatrix();
+        
+        /*gg.printAdjList();
+        
+        BitMatrix ggg = multiply(gg, g.adjMatrix);
+        
+        ggg.printMatrix();*/
+        
+        //ggg.printAdjList();
     }
     
     /**
@@ -103,7 +117,7 @@ public class Graph {
     {
         BitMatrix c = new BitMatrix(a.size, b.size);//create an empty matrix
         
-        for(int s=0; s<a.size; s++)
+        for(int s=0; s<c.size; s++)
         {
             for(int t=0; t<c.size; t++)
             {
@@ -116,6 +130,31 @@ public class Graph {
         }
             
         return c;
+    }
+    
+    /**
+     * Warshall algorithm
+     * @param matrix
+     * @return 
+     */
+    public static BitMatrix warshall(BitMatrix matrix)
+    {
+        BitMatrix a = new BitMatrix(matrix.size, matrix.size);
+        a = matrix;
+        
+        for(int i=0; i<a.size; i++)
+        {
+            for(int s=0; s<a.size; s++)
+            {
+                for(int t=0; t<a.size; t++)
+                {
+                    if(a.get(s,i)&& a.get(i,t))
+                        a.set(s,t);
+                }
+            }
+        }
+        
+        return a;
     }
             
 }

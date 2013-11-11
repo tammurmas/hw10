@@ -102,15 +102,13 @@ public class BitMatrix {
     {
         System.out.println("Adjacency list");
         
-        for (int i=0; i<this.size; i++)
+        for (int i=1; i<this.size; i++)
         {
-            System.out.print(i+" adjacent to: ");
-            for (int j=0; j<this.size; j++)
+            for (int j=1; j<this.size; j++)
             {
                 if(this.get(i,j) == true)
-                    System.out.print(j+", ");
+                    System.out.println(i+">"+j);
             }
-            System.out.println();
         }
     }
     

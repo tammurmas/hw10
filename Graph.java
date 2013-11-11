@@ -8,6 +8,8 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.BitSet;
 
 /**
  *
@@ -78,44 +80,52 @@ public class Graph {
     
     public static void main(String[] args) throws IOException
     {
-        Graph g = new Graph("adj.txt");
+        Graph g = new Graph("Warshall.txt");
         
-        g.adjMatrix.printMatrix();
+        BitMatrix w = new BitMatrix(g.adjMatrix.size, g.adjMatrix.size);
         
-        System.out.println();
+        w = g.warshall();
         
-        BitMatrix a = warshall(g.adjMatrix);
-        
-        System.out.println();
+        BitMatrix a = g.closure();
         
         a.printMatrix();
-        
         System.out.println();
+        w.printMatrix();
+    }
+    
+    public BitMatrix closure()
+    {
+        //create new bitmatrices for calculations
+        BitMatrix a = this.adjMatrix;
+        BitMatrix result = new BitMatrix(this.adjMatrix.size, this.adjMatrix.size);
+        BitMatrix temp   = new BitMatrix(this.adjMatrix.size, this.adjMatrix.size);
         
-        //g.adjMatrix.printAdjList();
+        for(int i=0; i<this.adjMatrix.size; i++)
+        {
+            result.rows[i] = (BitSet)(this.adjMatrix.rows[i]).clone();//clone values of the original adjacency matrix to inculde paths of size 1
+            temp.rows[i] = (BitSet)(this.adjMatrix.rows[i]).clone();
+        }
         
-        BitMatrix gg = multiply(g.adjMatrix, g.adjMatrix);
+        int i=1;//we multiply together two matrices in the first step so we start from one
+        while(i<this.adjMatrix.size)
+        {
+            temp = multiply(temp, a);
+            sum(result, temp);
+            i++;
+        }
         
-        gg.printMatrix();
-        
-        /*gg.printAdjList();
-        
-        BitMatrix ggg = multiply(gg, g.adjMatrix);
-        
-        ggg.printMatrix();*/
-        
-        //ggg.printAdjList();
+        return result;
     }
     
     /**
-     * Multiplies matrix to itself the given times
+     * Multiplies two matrixes
      * HINT: https://courses.cs.ut.ee/MTAT.03.238/2013_fall/uploads/Main/08_alg_Graphs.6up.pdf
-     * @param numOfTimes - the number of times matrix is going to be multiplied to itself
+     * @param a
      * @return 
      */
     public static BitMatrix multiply(BitMatrix a, BitMatrix b)
     {
-        BitMatrix c = new BitMatrix(a.size, b.size);//create an empty matrix
+        BitMatrix c = new BitMatrix(a.size, a.size);//create an empty matrix
         
         for(int s=0; s<c.size; s++)
         {
@@ -133,14 +143,35 @@ public class Graph {
     }
     
     /**
-     * Warshall algorithm
+     * A small helper to sum together two matrices for the final transitive closure matrix
+     * @param sum
+     * @param a 
+     */
+    public static void sum(BitMatrix sum, BitMatrix a)
+    {
+        for(int i=0; i<sum.size; i++)
+        {
+            for(int j=0; j<sum.size; j++)
+            {
+                if(a.get(i,j))
+                    sum.set(i,j);
+            }
+        }
+    }
+    
+    /**
+     * Warshall algorithm that calculates the transitive closure of the given adjacency matrix
      * @param matrix
      * @return 
      */
-    public static BitMatrix warshall(BitMatrix matrix)
+    public BitMatrix warshall()
     {
-        BitMatrix a = new BitMatrix(matrix.size, matrix.size);
-        a = matrix;
+        BitMatrix a = new BitMatrix(this.adjMatrix.size, this.adjMatrix.size);
+        //create a new bitmatrix
+        for(int i=0; i<this.adjMatrix.size; i++)
+        {
+            a.rows[i] = (BitSet)(this.adjMatrix.rows[i]).clone();
+        }
         
         for(int i=0; i<a.size; i++)
         {

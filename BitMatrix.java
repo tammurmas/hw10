@@ -4,10 +4,6 @@
  */
 package tamm.aa.hw10;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.BitSet;
 
 /**
@@ -84,9 +80,9 @@ public class BitMatrix {
     public void printMatrix()
     {
         //our values start from 1 so we start the printing cycle from 1 as well
-        for (int i=0; i<this.size; i++)
+        for (int i=1; i<this.size; i++)
         {
-            for (int j=0; j<this.size; j++)
+            for (int j=1; j<this.size; j++)
             {
                 System.out.print(boolToInt(this.get(i,j))+" ");
             }

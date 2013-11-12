@@ -73,6 +73,81 @@ public class BitMatrix {
     public void set (int i, int j) { rows[i].set(j); }
     
     /**
+     * Multiplies two matrixes
+     * HINT: https://courses.cs.ut.ee/MTAT.03.238/2013_fall/uploads/Main/08_alg_Graphs.6up.pdf
+     * @param a
+     * @return 
+     */
+    public void multiply()
+    {
+        for(int s=0; s<this.size; s++)
+        {
+            for(int t=0; t<this.size; t++)
+            {
+                for(int i=0; i<this.size; i++)
+                {
+                    if(this.get(s,i)&& this.get(i,t))
+                        this.set(s,t);
+                }
+            }
+        }
+    }
+    
+    public void closure()
+    {
+        int i=1;//we multiply together two matrices in the first step so we start from one
+        while(i<this.size)
+        {
+            this.multiply();
+            i++;
+        }
+    }
+    
+    /**
+     * Warshall algorithm that calculates the transitive closure of the given adjacency matrix
+     * @param matrix
+     * @return 
+     */
+    public void warshall()
+    {
+        for(int i=0; i<this.size; i++)
+        {
+            for(int s=0; s<this.size; s++)
+            {
+                for(int t=0; t<this.size; t++)
+                {
+                    if(this.get(s,i)&& this.get(i,t))
+                        this.set(s,t);
+                }
+            }
+        }
+    }
+    
+    /**
+     * An improved version of the Warshall algorithm that breaks the loop if a[s][i] is false
+     * 
+     */
+    public void impWarshall()
+    {
+        for(int i=0; i<this.size; i++)
+        {
+            for(int s=0; s<this.size; s++)
+            {
+                //no point to continue on from here if the value is false
+                if(this.get(s,i) == true)
+                {
+                    for(int t=0; t<this.size; t++)
+                    {
+                        if(this.get(s,i)&& this.get(i,t))
+                            this.set(s,t);
+                    }
+                }
+                
+            }
+        }
+    }
+    
+    /**
      * Prints the given adjacency matrix
      * Used for small data sets
      * @param matrix 
@@ -80,9 +155,9 @@ public class BitMatrix {
     public void printMatrix()
     {
         //our values start from 1 so we start the printing cycle from 1 as well
-        for (int i=1; i<this.size; i++)
+        for (int i=0; i<this.size; i++)
         {
-            for (int j=1; j<this.size; j++)
+            for (int j=0; j<this.size; j++)
             {
                 System.out.print(boolToInt(this.get(i,j))+" ");
             }
@@ -98,14 +173,22 @@ public class BitMatrix {
     {
         System.out.println("Adjacency list");
         
-        for (int i=1; i<this.size; i++)
+        int count = 0;
+        
+        for (int i=0; i<this.size; i++)
         {
-            for (int j=1; j<this.size; j++)
+            for (int j=0; j<this.size; j++)
             {
                 if(this.get(i,j) == true)
+                {
                     System.out.println(i+">"+j);
+                    count++;
+                }
+                    
             }
         }
+        
+        System.out.println(count);
     }
     
     /**
@@ -119,6 +202,26 @@ public class BitMatrix {
             return 0;
         else
             return 1;
+    }
+    
+    /**
+     * A small helper that return boolean value whether two matrices are equal
+     * @param w - the matrix to be compared with
+     * @return 
+     */
+    public boolean equal(BitMatrix w)
+    {
+        boolean eq = true;
+        for(int i=0; i<this.size; i++)
+        {
+            if(this.rows[i].equals(w.rows[i]) == false)
+            {
+                eq = false;
+                break;
+            }
+        }
+        
+        return eq;
     }
     
 }

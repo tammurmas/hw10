@@ -8,8 +8,8 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.BitSet;
+import java.util.Random;
 
 /**
  *
@@ -78,114 +78,111 @@ public class Graph {
         }
     }
     
+    /**
+     * Constructor that creates a graph with random nodes and edges between them
+     * @param nodes - number of nodes
+     * @param edges - number of edges placed randomly between nodes
+     */
+    public Graph(int nodes, int edges)
+    {
+        this.size = nodes-1;
+        
+        this.adjMatrix = new BitMatrix(this.size, this.size);
+        
+        for (int i=0; i<edges; i++)
+        {
+            int y = randInt(0, this.size-1);
+            int x = randInt(0, this.size-1);
+            
+            this.adjMatrix.set(y,x);
+        }
+    }
+    
     public static void main(String[] args) throws IOException
     {
-        Graph g = new Graph("Warshall.txt");
+        /*Graph g = new Graph("Warshall.txt");
         
-        BitMatrix w = new BitMatrix(g.adjMatrix.size, g.adjMatrix.size);
+        //create copies of the graph adjacency matrix
+        BitMatrix w        = g.copyMatrix();
+        BitMatrix regular  = g.copyMatrix();
         
-        w = g.warshall();
+        regular.closure();
+        w.warshall();
         
-        BitMatrix a = g.closure();
-        
-        a.printMatrix();
+        regular.printMatrix();
         System.out.println();
+        
         w.printMatrix();
+        System.out.println();
+        
+        System.out.println(w.equal(regular));//are they equal*/
+        
+        Graph rand = new Graph(800,2500);
+        
+        //create copies of the graph adjacency matrix
+        BitMatrix w        = rand.copyMatrix();
+        BitMatrix improved = rand.copyMatrix();
+        BitMatrix regular  = rand.copyMatrix();
+        
+        StopWatch timer = new StopWatch();
+        /*timer.start();
+        regular.closure();
+        timer.stop();
+        
+        System.out.println("Regular: "+timer.getElapsedTimeSecs());*/
+        
+        timer.start();
+        w.warshall();
+        timer.stop();
+        
+        System.out.println("Warshall: "+timer.getElapsedTimeSecs());
+        
+        timer.start();
+        improved.impWarshall();
+        timer.stop();
+        
+        System.out.println("Improved Warshall: "+timer.getElapsedTimeSecs());
+        
+        System.out.println(w.equal(improved));
+        
     }
     
-    public BitMatrix closure()
+    public BitMatrix copyMatrix()
     {
-        //create new bitmatrices for calculations
         BitMatrix a = this.adjMatrix;
-        BitMatrix result = new BitMatrix(this.adjMatrix.size, this.adjMatrix.size);
-        BitMatrix temp   = new BitMatrix(this.adjMatrix.size, this.adjMatrix.size);
+        BitMatrix copy = new BitMatrix(this.adjMatrix.size, this.adjMatrix.size);
         
         for(int i=0; i<this.adjMatrix.size; i++)
         {
-            result.rows[i] = (BitSet)(this.adjMatrix.rows[i]).clone();//clone values of the original adjacency matrix to inculde paths of size 1
-            temp.rows[i] = (BitSet)(this.adjMatrix.rows[i]).clone();
+            copy.rows[i] = (BitSet)(this.adjMatrix.rows[i]).clone();//clone values of the original adjacency matrix
         }
         
-        int i=1;//we multiply together two matrices in the first step so we start from one
-        while(i<this.adjMatrix.size)
-        {
-            temp = multiply(temp, a);
-            sum(result, temp);
-            i++;
-        }
-        
-        return result;
+        return copy;
     }
     
-    /**
-     * Multiplies two matrixes
-     * HINT: https://courses.cs.ut.ee/MTAT.03.238/2013_fall/uploads/Main/08_alg_Graphs.6up.pdf
-     * @param a
-     * @return 
-     */
-    public static BitMatrix multiply(BitMatrix a, BitMatrix b)
+    
+    public static void randValues(int size)
     {
-        BitMatrix c = new BitMatrix(a.size, a.size);//create an empty matrix
-        
-        for(int s=0; s<c.size; s++)
+        for (int i=0; i<size; i++)
         {
-            for(int t=0; t<c.size; t++)
-            {
-                for(int i=0; i<c.size; i++)
-                {
-                    if(a.get(s,i)&& b.get(i,t))
-                        c.set(s,t);
-                }
-            }
-        }
+            int y = randInt(0, size);
+            int x = randInt(0, size);
             
-        return c;
-    }
-    
-    /**
-     * A small helper to sum together two matrices for the final transitive closure matrix
-     * @param sum
-     * @param a 
-     */
-    public static void sum(BitMatrix sum, BitMatrix a)
-    {
-        for(int i=0; i<sum.size; i++)
-        {
-            for(int j=0; j<sum.size; j++)
-            {
-                if(a.get(i,j))
-                    sum.set(i,j);
-            }
+            System.out.println(y+">"+x);
         }
     }
     
     /**
-     * Warshall algorithm that calculates the transitive closure of the given adjacency matrix
-     * @param matrix
+     * A small helper for generating random integers
+     * HINT: http://stackoverflow.com/questions/363681/generating-random-numbers-in-a-range-with-java
+     * @param min
+     * @param max
      * @return 
      */
-    public BitMatrix warshall()
+    public static int randInt(int min, int max)
     {
-        BitMatrix a = new BitMatrix(this.adjMatrix.size, this.adjMatrix.size);
-        //create a new bitmatrix
-        for(int i=0; i<this.adjMatrix.size; i++)
-        {
-            a.rows[i] = (BitSet)(this.adjMatrix.rows[i]).clone();
-        }
-        
-        for(int i=0; i<a.size; i++)
-        {
-            for(int s=0; s<a.size; s++)
-            {
-                for(int t=0; t<a.size; t++)
-                {
-                    if(a.get(s,i)&& a.get(i,t))
-                        a.set(s,t);
-                }
-            }
-        }
-        
-        return a;
+        Random rand = new Random();
+        return rand.nextInt((max - min) + 1) + min;
     }
             
 }

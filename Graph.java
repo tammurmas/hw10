@@ -117,7 +117,8 @@ public class Graph {
         
         System.out.println(w.equal(regular));//are they equal*/
         
-        Graph rand = new Graph(800,2500);
+        //Graph rand = new Graph(800,2500);
+        Graph rand = new Graph("adj.txt");
         
         //create copies of the graph adjacency matrix
         BitMatrix w        = rand.copyMatrix();
@@ -144,6 +145,10 @@ public class Graph {
         System.out.println("Improved Warshall: "+timer.getElapsedTimeSecs());
         
         System.out.println(w.equal(improved));
+        
+        w.printMatrix();
+        System.out.println();
+        improved.printMatrix();
         
     }
     

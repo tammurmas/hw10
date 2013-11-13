@@ -131,19 +131,20 @@ public class BitMatrix {
     {
         for(int i=0; i<this.size; i++)
         {
-            for(int s=0; s<this.size; s++)
+            for(int s=0; s<this.size;s++)
             {
                 //no point to continue on from here if the value is false
                 if(this.get(s,i) == true)
-                {
+                {                    
                     for(int t=0; t<this.size; t++)
                     {
-                        if(this.get(s,i)&& this.get(i,t))
+                        if(this.get(i,t))
+                        {
                             this.set(s,t);
+                        }
                     }
                 }
-                
-            }
+            } 
         }
     }
     
